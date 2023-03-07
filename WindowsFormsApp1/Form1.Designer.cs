@@ -1,6 +1,7 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
+using System.Collections;
 
 namespace WindowsFormsApp1
 {
@@ -32,7 +33,22 @@ namespace WindowsFormsApp1
         /// </summary>
         /// 
 
-        DriveInfo[] allDrives = DriveInfo.GetDrives();
+        
+
+        public int getNumberOfUSB()
+        {
+            int ans = 0;
+            for (int i = 0; i < allDrives.Length; i++)
+            {
+                if (allDrives[i].DriveType.ToString() == "Removable")
+                {
+                    ans++;
+                }
+            }
+            return ans;
+        }
+
+
 
         private void InitializeComponent()
         {
@@ -43,7 +59,6 @@ namespace WindowsFormsApp1
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -63,63 +78,55 @@ namespace WindowsFormsApp1
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.panel1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.panel1.Location = new System.Drawing.Point(180, 122);
+            this.panel1.Location = new System.Drawing.Point(490, 166);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(191, 97);
+            this.panel1.Size = new System.Drawing.Size(298, 119);
             this.panel1.TabIndex = 0;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.25F);
-            this.label2.Location = new System.Drawing.Point(113, 53);
+            this.label2.Location = new System.Drawing.Point(169, 68);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(46, 17);
+            this.label2.Size = new System.Drawing.Size(58, 22);
             this.label2.TabIndex = 2;
             this.label2.Text = "label2";
             this.label2.Click += new System.EventHandler(this.label2_Click);
-            this.label2.MouseEnter += new System.EventHandler(this.panel1_MouseEnter);
-            this.label2.MouseLeave += new System.EventHandler(this.panel1_MouseLeave);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(112, 24);
+            this.label1.Location = new System.Drawing.Point(167, 33);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(66, 24);
+            this.label1.Size = new System.Drawing.Size(85, 29);
             this.label1.TabIndex = 1;
             this.label1.Text = "label1";
-            this.label1.MouseEnter += new System.EventHandler(this.panel1_MouseEnter);
-            this.label1.MouseLeave += new System.EventHandler(this.panel1_MouseLeave);
             // 
             // pictureBox1
             // 
             this.pictureBox1.InitialImage = null;
-            this.pictureBox1.Location = new System.Drawing.Point(20, 10);
+            this.pictureBox1.Location = new System.Drawing.Point(27, 12);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(86, 77);
+            this.pictureBox1.Size = new System.Drawing.Size(115, 95);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
-            this.pictureBox1.MouseEnter += new System.EventHandler(this.panel1_MouseEnter);
-            this.pictureBox1.MouseLeave += new System.EventHandler(this.panel1_MouseLeave);
-            // 
-            // panel2
-            // 
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(200, 100);
-            this.panel2.TabIndex = 0;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1067, 554);
             this.Controls.Add(this.panel1);
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.form1_Load);
@@ -140,6 +147,19 @@ namespace WindowsFormsApp1
         private Label label1;
         private PictureBox pictureBox1;
         private Panel panel2;
+
+        // Drive component include: 
+        private Panel[] drive_layouts_panels = new Panel[100];
+        private Label[] drive_name_labels = new Label[100];
+        private Label[] drive_format_labels = new Label[100];
+        private PictureBox[] drive_image_pictureboxes = new PictureBox[100];
+
+        // all drivers
+        private DriveInfo[] allDrives = DriveInfo.GetDrives();
+
+        
+
+        
     }
 }
 
