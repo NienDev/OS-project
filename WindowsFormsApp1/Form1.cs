@@ -56,16 +56,26 @@ namespace WindowsFormsApp1
 
         public void loadTreeView(DirectoryInfo directoryInfo, TreeNodeCollection addInMe)
         {
-            TreeNode curNode = addInMe.Add(directoryInfo.Name);
+            TreeNode curNode = addInMe.Add(directoryInfo.FullName, directoryInfo.Name);
+            curNode.ImageIndex = 2;
+            curNode.SelectedImageIndex = 1;
+            curNode.StateImageIndex = 2;
+            curNode.Tag = directoryInfo.FullName;
             try
             {
+
                 foreach (FileInfo file in directoryInfo.GetFiles())
                 {
-                    curNode.Nodes.Add(file.FullName, file.Name);
+                    TreeNode fileNode = curNode.Nodes.Add(file.FullName, file.Name);
+                    fileNode.ImageIndex = 0;
+                    fileNode.SelectedImageIndex = 0;
+                    fileNode.Tag = file.FullName;
+                    UpdateProgress();
                 }
                 foreach (DirectoryInfo subdir in directoryInfo.GetDirectories())
                 {
                     loadTreeView(subdir, curNode.Nodes);
+                    UpdateProgress();
                 }
             }
             catch (Exception ex)
@@ -74,9 +84,45 @@ namespace WindowsFormsApp1
             }
         }
 
+        private void UpdateProgress()
+        {
+            if (progressBar1.Value < progressBar1.Maximum)
+            {
+                progressBar1.Value++;
+                int percent = (int)(((double)progressBar1.Value / (double)progressBar1.Maximum) * 100);
+                progressBar1.CreateGraphics().DrawString(percent.ToString() + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(progressBar1.Width / 2 - 10, progressBar1.Height / 2 - 7));
+                Application.DoEvents();
+            }
+        }
+
         public Form1()
         {
             InitializeComponent();
+
+            // Mouse out of treeView
+            this.treeView1.MouseLeave += (s, e) =>
+            {
+                treeView1.SelectedNode = null;
+            };
+
+            // Mouse move in treeview
+            treeView1.NodeMouseHover += (s, e) =>
+            {
+                // Get the node at the current mouse pointer location.
+                TreeNode theNode = treeView1.GetNodeAt(treeView1.PointToClient(MousePosition));
+                if (theNode != null && theNode.Tag != null)
+                {
+                    if (theNode.Tag.ToString() != this.toolTip1.GetToolTip(this.treeView1))
+                        this.toolTip1.SetToolTip(this.treeView1, theNode.Tag.ToString());
+                }
+                else     // Pointer is not over a node so clear the ToolTip.
+                {
+                    this.toolTip1.SetToolTip(this.treeView1, "");
+                }
+            };
+            
+            
+
 
             List<string> usb_names = new List<string>();
             List<string> usb_formats = new List<string>();
@@ -162,15 +208,31 @@ namespace WindowsFormsApp1
                 if (component != null)
                 {
                     component.image.Click += (s, e) => {
+
+                        progressBar1.Value = 0;
+
                         foreach (DriveComponent component1 in drives)
                         {
                             // hide all components
                             component1.layout.Hide();
-                            
                         }
+
+                        treeView1.Show();
+                        progressBar1.Show();
+
                         DirectoryInfo directoryInfo = new DirectoryInfo(component.name.Text);
                         if (directoryInfo.Exists)
                         {
+                            try
+                            {
+                                progressBar1.Maximum = Directory.GetFiles(component.name.Text, "*.*", SearchOption.AllDirectories).Length + Directory.GetDirectories(component.name.Text, "**", SearchOption.AllDirectories).Length;
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                            treeView1.ImageList = imageList2;
+
                             loadTreeView(directoryInfo, treeView1.Nodes);
                         }
                     };
@@ -235,6 +297,9 @@ namespace WindowsFormsApp1
                     drives[i].image.Image = imageList1.Images[0];
                 }
             }
+
+            treeView1.Hide();
+            progressBar1.Hide();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -308,6 +373,16 @@ namespace WindowsFormsApp1
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
+
+        private void progressBar1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
